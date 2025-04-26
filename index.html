@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>DORK IT</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="https://img.icons8.com/ios-filled/50/00ff00/hacker.png" type="image/png">
     <style>
         body {
             background-color: #0f0f0f;
@@ -12,35 +13,34 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
-            height: 100vh;
+            justify-content: flex-start;
+            min-height: 100vh;
             margin: 0;
+            padding-top: 40px;
             animation: pulse 5s infinite;
         }
 
         h1 {
-            margin-bottom: 5px;
+            margin-bottom: 10px;
             text-shadow: 0 0 10px #00ff00;
             font-size: 48px;
+            animation: typewriter 3s steps(10) 1 normal both, blink 1s step-end infinite;
+            overflow: hidden;
+            white-space: nowrap;
+            border-right: 2px solid #00ff00;
         }
 
-        .cursor {
-            display: inline-block;
-            width: 10px;
-            background-color: #00ff00;
-            margin-left: 5px;
-            animation: blink 1s infinite;
+        @keyframes typewriter {
+            from { width: 0; }
+            to { width: 12ch; }
         }
-
         @keyframes blink {
-            0% { opacity: 1; }
-            50% { opacity: 0; }
-            100% { opacity: 1; }
+            50% { border-color: transparent; }
         }
 
         select, input, button {
-            margin: 10px;
-            padding: 12px;
+            margin: 5px;
+            padding: 10px;
             background-color: #000000;
             border: 1px solid #00ff00;
             color: #00ff00;
@@ -52,10 +52,44 @@
             cursor: pointer;
             transition: background-color 0.3s;
         }
-
         button:hover {
             background-color: #00ff00;
             color: #000000;
+        }
+
+        .dork-template {
+            margin: 5px;
+            padding: 5px;
+            border: 1px dashed #00ff00;
+            cursor: pointer;
+            width: 300px;
+            text-align: center;
+            transition: all 0.3s;
+        }
+        .dork-template:hover {
+            background-color: #00ff00;
+            color: #000;
+            transform: scale(1.05);
+        }
+
+        #history {
+            margin-top: 20px;
+            width: 80%;
+            max-width: 600px;
+            text-align: left;
+            font-size: 14px;
+            overflow-y: auto;
+            max-height: 200px;
+            border-top: 1px dashed #00ff00;
+            padding-top: 10px;
+        }
+
+        footer {
+            margin-top: 30px;
+            font-size: 14px;
+            color: #00ff00;
+            text-align: center;
+            opacity: 0.8;
         }
 
         @keyframes pulse {
@@ -63,48 +97,144 @@
             50% { background-color: #1a1a1a; }
             100% { background-color: #0f0f0f; }
         }
-
-        footer {
-            margin-top: 20px;
-            font-size: 14px;
-            color: #00ff00;
-            text-align: center;
-            opacity: 0.8;
-        }
     </style>
 </head>
+
 <body>
 
-<h1>DORK IT<span class="cursor"></span></h1>
+<h1>DORK IT</h1>
 
-<form id="dorkForm">
-    <select id="dorkType">
-        <option value="site:">Site Specific</option>
-        <option value="intitle:">Title Specific</option>
-        <option value="inurl:">URL Specific</option>
-        <option value="filetype:">File Type</option>
-        <option value="ext:">Extension Type</option>
-        <option value="intext:">Text Search</option>
-    </select><br>
-    
-    <input type="text" id="searchQuery" placeholder="Type your search..." required><br>
-    
-    <button type="submit">🔍 Launch Dork</button>
-</form>
+<div class="form-group">
+    <input type="text" id="site" placeholder="site: example.com" />
+    <input type="text" id="intitle" placeholder="intitle: Admin Panel" />
+    <input type="text" id="inurl" placeholder="inurl: login" />
+    <input type="text" id="filetype" placeholder="filetype: pdf" />
+    <input type="text" id="intext" placeholder="intext: password" />
+</div>
 
-<footer>
-    SarahS. // [Error 404: Mercy Not Found]
-</footer>
+<div class="form-group">
+    <button onclick="launchDork()">🔍 Launch Dork</button>
+    <button onclick="copyDork()">📋 Copy Dork</button>
+    <button onclick="randomDork()">🎲 Random Dork</button>
+    <button onclick="downloadDorks()">⬇️ Download History</button>
+</div>
+
+<div id="famousDorks">
+    <h3>🔥 Famous Dork Templates</h3>
+    <div class="dork-template" onclick="useTemplate('intitle:index.of passwd')">Index of Passwords</div>
+    <div class="dork-template" onclick="useTemplate('filetype:sql password')">SQL Password Files</div>
+    <div class="dork-template" onclick="useTemplate('inurl:admin login')">Admin Login Pages</div>
+    <div class="dork-template" onclick="useTemplate('site:gov confidential')">Gov Confidential Docs</div>
+</div>
+
+<div id="history">
+    <h3>🕵️‍♂️ Dork Search History</h3>
+    <ul id="historyList"></ul>
+</div>
+
+<footer>SarahS. // [Error 404: Mercy Not Found]</footer>
 
 <script>
-    document.getElementById('dorkForm').addEventListener('submit', function(event) {
-        event.preventDefault();
-        const dorkType = document.getElementById('dorkType').value;
-        const searchQuery = document.getElementById('searchQuery').value.trim();
-        const finalQuery = `${dorkType}${searchQuery}`;
-        const googleSearchURL = `https://www.google.com/search?q=${encodeURIComponent(finalQuery)}`;
+function launchDork() {
+    const site = document.getElementById('site').value.trim();
+    const intitle = document.getElementById('intitle').value.trim();
+    const inurl = document.getElementById('inurl').value.trim();
+    const filetype = document.getElementById('filetype').value.trim();
+    const intext = document.getElementById('intext').value.trim();
+
+    let dorkQuery = '';
+    if (site) dorkQuery += `site:${site} `;
+    if (intitle) dorkQuery += `intitle:${intitle} `;
+    if (inurl) dorkQuery += `inurl:${inurl} `;
+    if (filetype) dorkQuery += `filetype:${filetype} `;
+    if (intext) dorkQuery += `intext:${intext} `;
+
+    dorkQuery = dorkQuery.trim();
+    if (dorkQuery.length > 0) {
+        const googleSearchURL = `https://www.google.com/search?q=${encodeURIComponent(dorkQuery)}`;
         window.open(googleSearchURL, '_blank');
+        saveHistory(dorkQuery);
+    } else {
+        alert('Fill at least one field!');
+    }
+}
+
+function copyDork() {
+    const site = document.getElementById('site').value.trim();
+    const intitle = document.getElementById('intitle').value.trim();
+    const inurl = document.getElementById('inurl').value.trim();
+    const filetype = document.getElementById('filetype').value.trim();
+    const intext = document.getElementById('intext').value.trim();
+
+    let dorkQuery = '';
+    if (site) dorkQuery += `site:${site} `;
+    if (intitle) dorkQuery += `intitle:${intitle} `;
+    if (inurl) dorkQuery += `inurl:${inurl} `;
+    if (filetype) dorkQuery += `filetype:${filetype} `;
+    if (intext) dorkQuery += `intext:${intext} `;
+
+    dorkQuery = dorkQuery.trim();
+    if (dorkQuery.length > 0) {
+        navigator.clipboard.writeText(dorkQuery);
+        alert('Dork Copied to Clipboard!');
+    } else {
+        alert('Fill at least one field!');
+    }
+}
+
+function randomDork() {
+    const dorks = [
+        'intitle:"index of" passwords',
+        'filetype:sql login',
+        'site:edu confidential',
+        'inurl:admin login',
+        'filetype:xls password'
+    ];
+    const random = dorks[Math.floor(Math.random() * dorks.length)];
+    window.open(`https://www.google.com/search?q=${encodeURIComponent(random)}`, '_blank');
+    saveHistory(random);
+}
+
+function saveHistory(dork) {
+    let history = JSON.parse(localStorage.getItem('dorkHistory')) || [];
+    history.unshift(dork);
+    if (history.length > 10) history = history.slice(0, 10);
+    localStorage.setItem('dorkHistory', JSON.stringify(history));
+    renderHistory();
+}
+
+function renderHistory() {
+    const history = JSON.parse(localStorage.getItem('dorkHistory')) || [];
+    const historyList = document.getElementById('historyList');
+    historyList.innerHTML = '';
+    history.forEach(item => {
+        const li = document.createElement('li');
+        li.textContent = item;
+        historyList.appendChild(li);
     });
+}
+
+function useTemplate(dork) {
+    navigator.clipboard.writeText(dork);
+    alert(`Template copied: ${dork}`);
+}
+
+function downloadDorks() {
+    const history = JSON.parse(localStorage.getItem('dorkHistory')) || [];
+    if (history.length === 0) {
+        alert('No dorks to download!');
+        return;
+    }
+    const blob = new Blob([history.join('\n')], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'dork-history.txt';
+    a.click();
+    URL.revokeObjectURL(url);
+}
+
+window.onload = renderHistory;
 </script>
 
 </body>
