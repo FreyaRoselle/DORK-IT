@@ -1,7 +1,7 @@
 # DORK IT - Google Dork Builder Tool
 
 <p align="center">
-  <img src="(https://github.com/FreyaRoselle/DORK-IT/blob/main/DORK%20IT.png)" alt="DORK IT Banner" />
+  <img src="DORK IT.png" alt="DORK IT Banner" />
 </p>
 
 ---
