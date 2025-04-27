@@ -6,10 +6,6 @@
 
 ---
 
-
-
----
-
 ## 🔥 What is DORK IT?
 
 **DORK IT** is a hacker-themed, dark-styled web app to easily build **Google Dorks** and launch them instantly.  
