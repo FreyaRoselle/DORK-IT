@@ -6,9 +6,6 @@
 
 ---
 
-<p align="center">
-  <img src="https://komarev.com/ghpvc/?username=freyaroselle&label=VISITORS&color=00ff00&style=flat-square" alt="visitor counter"/>
-</p>
 
 
 ---
